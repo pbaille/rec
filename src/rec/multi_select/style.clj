@@ -3,6 +3,7 @@
 (def styles
   [:.multiselect-container
    {:padding :10px}
+   [:&.active [:.zmdi {:color :tomato}]]
    [:.select-bar
     {:background :#FAFAFA}
     [:.zmdi {:font-size :22px

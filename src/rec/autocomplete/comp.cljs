@@ -67,13 +67,13 @@
   (let [uniq-class (str (gensym))
         state (atom {:data (apply sorted-set data)
                      :value value
-                     :focus? false
+                     :focus focus
                      :highlighted 0
                      :class uniq-class
                      :on-select on-select})
         propositions (reaction (do-propositions @state))
         set-value! #(swap! state assoc :value % :highlighted 0)
-        set-focus! #(swap! state assoc :focus? %)
+        set-focus! #(do (swap! state assoc :focus %) ((if % on-focus on-blur) state))
         on-select! (juxt (partial on-select state) set-value!)]
     (r/create-class
       {:reagent-render
@@ -87,8 +87,9 @@
                      :on-change #(set-value! (.. % -target -value))
                      :on-focus #(set-focus! true)
                      :on-blur #(set-focus! false)
-                     :value (:value @state)}]
-            (when (:focus? @state)
+                     :value (:value @state)
+                     :auto-focus (:focus @state)}]
+            (when (:focus @state)
               [:div.propositions
                {:style {:max-height (:max-height options :100px)
                         :overflow-y :auto}}

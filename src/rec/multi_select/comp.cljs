@@ -12,7 +12,8 @@
          on-change identity
          icon-class :zmdi-github-alt}}]
   (let [state (atom {:selected (set selected)
-                     :data (set data)})]
+                     :data (set data)
+                     :focus false})]
     (fn []
       [:div.multiselect-container
        {:class (when (:focus @state) "active")}
@@ -22,6 +23,8 @@
         [(autocomplete
            {:data (:data @state)
             :value ""
+            :on-focus #(swap! state assoc :focus true)
+            :on-blur #(swap! state assoc :focus false)
             :focus (:focus @state)
             :on-select (fn [_ v]
                          (println "here")
