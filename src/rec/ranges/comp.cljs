@@ -18,10 +18,11 @@
                       (dissoc opts :on-change :value :op))]])))
 
 (defn range* [{:keys [on-change value op]
-                  :as opts}]
+               :or {value {:from 0 :to 0}
+                    on-change identity}
+               :as opts}]
   (let [op-str (name op)
-        state (atom {:op op-str
-                     :value value})
+        state (atom {:op op-str :value value})
         on-from-change (fn [from]
                          (let [to (get-in @state [:value :to])
                                move-to? (> from to)]
@@ -33,18 +34,17 @@
                          (swap! state assoc :value {:from (if move-from? to from) :to to})
                          (on-change @state)))
         cleaned-opts (dissoc opts :on-change :value :op)]
-    (println cleaned-opts)
     (fn []
       [:div.range {:class op-str}
        [:span (str op-str "  ")]
-       [:input (merge {:type "number"
-                       :value (get-in @state [:value :from])
-                       :on-change #(on-from-change (.. % -target -value))}
-                      cleaned-opts)]
-       [:input (merge {:type "number"
-                       :value (get-in @state [:value :to])
-                       :on-change #(on-to-change (.. % -target -value))}
-                      cleaned-opts)]])))
+       (for [[k v] (:value @state)]
+         ^{:key k}
+         [:input (merge {:type "number"
+                         :value v
+                         :on-change (condp = k
+                                      :to #(on-to-change (.. % -target -value))
+                                      :from #(on-from-change (.. % -target -value)))}
+                        cleaned-opts)])])))
 
 (defn gt [opts] (simple-range (merge {:op  :>} opts)))
 (defn gte [opts] (simple-range (merge {:op :>=} opts)))
@@ -69,7 +69,8 @@
   (let [state (atom {:ranges {}
                      :focus false
                      :value {}})
-        opts (dissoc opts :on-change)]
+        opts (dissoc opts :on-change)
+        names->components {">" gt ">=" gte "<" lt "<=" lte "in" in "out" out}]
     (fn []
       (let [focus? (:focus @state)]
         [:div.multirange-container
@@ -77,7 +78,7 @@
            [:div.add {:on-click #(swap! state assoc :focus true)}
             [:span placeholder]]
            [:div.constructors
-            (for [[name component] {">" gt ">=" gte "<" lt "<=" lte "in" in "out" out}]
+            (for [[name component] names->components]
               (let [sym (gensym)]
                 ^{:key sym}
                 [:span.constructor

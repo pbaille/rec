@@ -6,24 +6,27 @@
    [:.select-bar
     {:background :#FAFAFA}
     [:.zmdi {:font-size :22px
-             :width :22px
-             :padding-left :6px
+             :width :36px
+             :padding "0 10px"
              :margin :auto
              :vertical-align :middle}]
     [:.autocomplete-container
      {:display :inline-block
       :margin 0
-      :width "calc(100% - 22px)"}
+      :width "calc(100% - 36px)"}
      [:.propositions {:border 0
                       :width :100%
                       :background :#FAFAFA}
       [:.proposition {:background :transparent}
-       [:&.highlighted {:background :lightskyblue}]
+       [:&.highlighted {:background :lightskyblue
+                        :color :white}]
        [:&:hover {:background :lightgrey
                   :color :white}]]]
      [:input
-      {:background :transparent}
-      [:&:focus {:border {:top 0 :left 0 :right 0}}]]]]
+      {:background :transparent
+       :padding 0}
+      [:&:focus {:padding-left :8px
+                 :border {:top 0 :left 0 :right 0}}]]]]
    [:.selected-container
     {:position :relative}
     [:.selected-item
