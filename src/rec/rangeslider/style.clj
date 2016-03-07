@@ -37,7 +37,7 @@
       unselectable]]]
    [:.multi-rangeslider
     {:color :grey}
-    [:i :span
+    [:i
      {:font-size :22px}
      [:&:hover
       {:color :tomato}]]
