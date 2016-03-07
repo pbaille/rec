@@ -23,7 +23,16 @@
       :line-height :35px
       :font-size :18px
       :color :grey
-      :background :#FAFAFA}]
+      :background :#FAFAFA}
+     [:i
+      {:vertical-align :middle
+       :font-size :20px
+       :margin "0 4px"}
+      [:&:hover
+       {:color :tomato}]]
+     [:span.placeholder
+      {:padding :6px
+             :font-size :18px}]]
     [:.constructor
      {:background :lightskyblue
       :margin "0 8px 0 0"

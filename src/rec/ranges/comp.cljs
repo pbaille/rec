@@ -76,7 +76,8 @@
         [:div.multirange-container
          (if-not focus?
            [:div.add {:on-click #(swap! state assoc :focus true)}
-            [:span placeholder]]
+            [:i.zmdi.zmdi-plus-circle-o]
+            [:span.placeholder placeholder]]
            [:div.constructors
             (for [[name component] names->components]
               (let [sym (gensym)]
