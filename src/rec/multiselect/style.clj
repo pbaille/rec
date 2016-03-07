@@ -1,4 +1,4 @@
-(ns rec.multi-select.style)
+(ns rec.multiselect.style)
 
 (def styles
   [:.multiselect-container
@@ -11,7 +11,7 @@
              :padding "0 10px"
              :margin :auto
              :vertical-align :middle}]
-    [:.autocomplete-container
+    [:.dropdown-container
      {:display :inline-block
       :margin 0
       :width "calc(100% - 36px)"}
@@ -43,9 +43,4 @@
       [:i {:display :inline}]]
      [:i {:display :none
           :font-size :14px
-          :margin-right "4px"}]]]
-   ["::-webkit-scrollbar"
-    {:width :5px}]
-   ["::-webkit-scrollbar-thumb"
-    {:border-radius :5px
-     :background :grey}]])
+          :margin-right "4px"}]]]])

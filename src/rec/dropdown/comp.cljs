@@ -1,4 +1,4 @@
-(ns rec.autocomplete.comp
+(ns rec.dropdown.comp
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [reagent.core :as r :refer [atom]]))
 
@@ -25,7 +25,7 @@
            typed-so-far)))
 
 (defn- format-data
-  "TODO when data passed to autocomplete is an hashmap, group items"
+  "TODO when data passed to dropdown is an hashmap, group items"
   [raw-data]
   ())
 
@@ -54,7 +54,7 @@
                          (< item-offset-top parent-visible-top) item-offset-top)]
     (when new-scroll-top (set! (.-scrollTop parent) new-scroll-top))))
 
-(defn autocomplete
+(defn dropdown
   [{:keys [data value placeholder on-select on-focus on-blur focus]
     :as options
     :or {value ""
@@ -79,7 +79,7 @@
       {:reagent-render
        (fn []
          (let [highlighted (:highlighted @state)]
-           [:div.autocomplete-container
+           [:div.dropdown-container
             {:class uniq-class}
             [:input {:on-key-down (partial key-handler state propositions)
                      :type "text"

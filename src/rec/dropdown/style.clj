@@ -1,11 +1,10 @@
-(ns rec.autocomplete.style)
+(ns rec.dropdown.style)
 
-(def borders {:border "1px solid lightgrey"})
 (def left-pad "8px")
 (def input-height :35px)
 
 (def styles
-  [:div.autocomplete-container
+  [:div.dropdown-container
    {:width :100%
     :margin :10px
     :position :relative}
@@ -15,15 +14,12 @@
      :height input-height
      :font-size :14px
      :background-color :#FAFAFA
-
      :padding-left left-pad}
 
     [:&:focus
-     borders
      {:outline :none
       :border-bottom :none}]]
    [:.propositions
-    borders
     {:position :absolute
      :top input-height
      :left 0

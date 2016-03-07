@@ -1,14 +1,14 @@
 (ns rec.core
   (:require [reagent.core :as r :refer [atom]]
-            [rec.autocomplete.comp :refer [autocomplete]]
-            [rec.multi-select.comp :refer [multi-select]]
+            [rec.dropdown.comp :refer [dropdown]]
+            [rec.multiselect.comp :refer [multiselect]]
             [rec.ranges.comp :as ranges]))
 
 (defn app []
   [:div
-   [autocomplete
+   [dropdown
     {:data ["one" "two" "three" "four" "five" "six"]}]
-   [multi-select
+   [multiselect
     {:data ["one" "two" "three" "four" "five" "six"]}]
    [ranges/multirange
     {:on-change (fn [x] (println x)) :min 0 :max 10}]])

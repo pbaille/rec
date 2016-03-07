@@ -1,10 +1,8 @@
-(ns rec.multi-select.comp
+(ns rec.multiselect.comp
   (:require [reagent.core :as r :refer [atom]]
-            [rec.autocomplete.comp :refer [autocomplete]]))
+            [rec.dropdown.comp :refer [dropdown]]))
 
-
-
-(defn multi-select
+(defn multiselect
   [{:keys [data selected placeholder on-change icon-class]
     :or {selected []
          data []
@@ -20,7 +18,7 @@
        ;; :o
        [:div.select-bar
         [:i {:class (str "zmdi " (name icon-class))}]
-        [(autocomplete
+        [(dropdown
            {:data (:data @state)
             :value ""
             :on-focus #(swap! state assoc :focus true)

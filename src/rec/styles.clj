@@ -2,9 +2,8 @@
   (:require [garden.def :refer [defstylesheet defstyles]]
             [garden.units :refer [px]]
 
-            [rec.autocomplete.style :as ac]
-            [rec.multi-select.style :as ms]
-            [rec.scrollable-panel.style :as sp]
+            [rec.dropdown.style :as ac]
+            [rec.multiselect.style :as ms]
             [rec.ranges.style :as r]))
 
 (def border-box
@@ -16,11 +15,10 @@
 (defstyles styles
            ac/styles
            ms/styles
-           sp/styles
            r/styles
            border-box
            #_[:#app
-              [:.autocomplete-container
+              [:.dropdown-container
                {:width :40%
                 :display :inline-block}]
               [:.multiselect-container
