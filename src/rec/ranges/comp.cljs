@@ -98,7 +98,7 @@
                                                        (fn [x]
                                                          (swap! state update :value assoc sym x)
                                                          (on-change (:value @state))))])
-                                  (update :value assoc sym (:value default-value default-value)))))
+                                  (update :value assoc sym {:op name :value default-value}))))
                     (on-change (:value @state)))}
                  name]))])
 

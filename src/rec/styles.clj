@@ -4,6 +4,7 @@
 
             [rec.dropdown.style :as ac]
             [rec.multiselect.style :as ms]
+            [rec.rangeslider.style :as rs]
             [rec.ranges.style :as r]))
 
 (def border-box
@@ -16,6 +17,7 @@
            ac/styles
            ms/styles
            r/styles
+           rs/styles
            border-box
            #_[:#app
               [:.dropdown-container
