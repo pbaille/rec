@@ -25,8 +25,8 @@
 (defn rangeslider [{:keys [height range size plot-size on-change] :as opts}]
   (let [id (gensym)
         state (atom {:plot1-dragged false
-                     :plot1-x 0
                      :plot2-dragged false
+                     :plot1-x 0
                      :plot2-x size
                      :x-offset 0})
 
@@ -109,5 +109,12 @@
                                                   (on-change (:value @state))))])))}
         [:i.zmdi.zmdi-plus-circle-o]
         [:span "add rangeslider"]]
-       (for [[sym rs] (:rangesliders @state)] rs)])))
+       (for [[sym rs] (:rangesliders @state)]
+         ^{:key sym}
+         [:div.ms-item rs
+          [:i.zmdi.zmdi-close-circle-o
+           {:on-click #(reset! state
+                               (-> @state
+                                   (update :rangesliders dissoc sym)
+                                   (update :value dissoc sym)))}]])])))
 

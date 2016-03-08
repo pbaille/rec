@@ -74,6 +74,7 @@
     (fn []
       (let [focus? (:focus @state)]
         [:div.multirange-container
+         {:on-mouse-leave #(swap! state assoc :focus false)}
          (if-not focus?
            [:div.add {:on-click #(swap! state assoc :focus true)}
             [:i.zmdi.zmdi-plus-circle-o]

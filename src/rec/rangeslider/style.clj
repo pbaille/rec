@@ -41,4 +41,13 @@
       :margin :10px
       :margin-bottom :20px}
      fonticons
-     [:span {:font-size :18px}]]]])
+     [:span {:font-size :18px}]]
+    [:.ms-item
+     {:display :inline-block}
+     [:i {:display :none}]
+     [:&:hover [:i {:display :inline-block
+                    :position :relative
+                    :bottom :25px
+                    :right :15px
+                    :height 0}]
+        fonticons]]]])
