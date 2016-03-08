@@ -3,5 +3,5 @@
 /.nrepl-port
 /figwheel_server.log
 /resources/public/js/out
-/resources/css
-/resources/screen.css
+/resources/public/css
+/resources/public/screen.css
