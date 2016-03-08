@@ -25,7 +25,7 @@
      :top input-height
      :left 0
      :right 0
-     :z-index 1000}
+     :z-index 10000}
     [:.category
      [:.cat-title {:color :lightgrey
                    :background :white

@@ -1,8 +1,13 @@
 # rec
 
-Project description FIXME
+Collection of reagent components:
 
-## Dev
+- dropdown
+- multiselect
+- ranges
+- rangesliders
+
+## Demo
 
 lein run -m clojure.main script/fig.clj
 
