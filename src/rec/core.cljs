@@ -16,10 +16,10 @@
     {:data {:numbers ["one" "two" "three" "four" "five" "six"]
             :animals ["dog" "cat" "cow" "rabbit"]}}]
 
-   #_[ranges/multirange
+   [ranges/multirange
     {:on-change (fn [x] (println x)) :min 0 :max 10}]
 
-   #_[multi-rangeslider {:range [0 1]
+   [multi-rangeslider {:range [0 1]
                        :size 400
                        :plot-size 4
                        :height 20

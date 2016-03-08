@@ -6,8 +6,7 @@
 
 (def styles
   [:div.dropdown-container
-   {:width :100%
-    :margin (px 10)
+   {:margin (px 10)
     :position :relative}
    [:input
     {:width :100%

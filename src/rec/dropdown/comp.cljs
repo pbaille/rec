@@ -1,6 +1,7 @@
 (ns rec.dropdown.comp
   (:require-macros [reagent.ratom :refer [reaction]])
-  (:require [reagent.core :as r :refer [atom]]))
+  (:require [reagent.core :as r :refer [atom]]
+            [rec.dropdown.style :as styles]))
 
 (enable-console-print!)
 
@@ -88,7 +89,7 @@
     (when new-scroll-top (set! (.-scrollTop parent) new-scroll-top))))
 
 (defn dropdown
-  [{:keys [data value placeholder on-select on-focus on-blur focus]
+  [{:keys [data value placeholder on-select on-focus on-blur focus styles]
     :as options
     :or {value ""
          data []
@@ -150,7 +151,10 @@
        (fn [x]
          (when-let [node (aget (.getElementsByClassName js/document "proposition" (r/dom-node x))
                                (.indexOf (clj->js (map :id @propositions)) (:highlighted @state)))]
-           (show-selected-item node)))})))
+           (show-selected-item node)))
+       :component-did-mount
+       (fn [_]
+         (styles/styles (str "." uniq-class) styles))})))
 
 ;; tests --------------------------------------------------------------------
 
@@ -162,6 +166,7 @@
    :cat2 (items 5)
    :cat3 (items 10)})
 
-(def dropdown1 [dropdown {:data sample-data}])
+(def dropdown1 [dropdown {:data sample-data :styles {:input {:background :pink
+                                                             :color :#f00}}}])
 
 (def dropdown2 [dropdown {:data (items 10)}])
