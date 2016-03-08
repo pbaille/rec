@@ -33,7 +33,7 @@
                    :line-height :30px
                    :padding-left (px left-pad)
                    :border-bottom "2px solid lightgrey"}]
-     [:&.invisible
+     [:&.unique
       [:.proposition {:padding-left (px left-pad)}]]
      [:.proposition
       {:padding (px 2)

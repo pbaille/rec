@@ -137,7 +137,7 @@
                    ^{:key (gensym)}
                    [:div.category
                     (if cat [:div.cat-title (name cat)]
-                            {:class "invisible"})
+                            {:class "unique"})
                     (doall
                       (for [{:keys [name id] :as item} (sort-by :idx items)]
                         ^{:key (gensym)}
