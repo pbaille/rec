@@ -91,7 +91,7 @@
        :component-did-mount
        #(swap! state assoc :x-offset (.-offsetLeft (.getElementById js/document id)))})))
 
-(defn multi-rangeslider [{:keys [height range size plot-size on-change] :as opts}]
+(defn multi-rangeslider [{:keys [placeholder height range size plot-size on-change] :as opts}]
   (let [state (atom {:rangesliders {}
                      :value {}})]
     (fn []
@@ -100,21 +100,26 @@
         {:on-click
          (fn []
            (let [sym (gensym)]
-             (swap! state
-                    assoc-in
-                    [:rangesliders sym]
-                    ^{:key sym}
-                    [rangeslider (assoc opts :on-change
-                                             #(do (swap! state assoc-in [:value sym] %)
-                                                  (on-change (:value @state))))])))}
+             (reset! state
+                     (-> @state
+                         (assoc-in
+                           [:rangesliders sym]
+                           ^{:key sym}
+                           [rangeslider (assoc opts :on-change
+                                                    #(do (swap! state assoc-in [:value sym] %)
+                                                         (on-change (:value @state))))])
+                         (assoc-in [:value sym] range)))
+             (on-change (:value @state))))}
         [:i.zmdi.zmdi-plus-circle-o]
-        [:span "add rangeslider"]]
+        [:span (or placeholder "add rangeslider")]]
        (for [[sym rs] (:rangesliders @state)]
          ^{:key sym}
          [:div.ms-item rs
           [:i.zmdi.zmdi-close-circle-o
-           {:on-click #(reset! state
-                               (-> @state
-                                   (update :rangesliders dissoc sym)
-                                   (update :value dissoc sym)))}]])])))
+           {:on-click #(do
+                        (reset! state
+                                (-> @state
+                                    (update :rangesliders dissoc sym)
+                                    (update :value dissoc sym)))
+                        (on-change (:value @state)))}]])])))
 
