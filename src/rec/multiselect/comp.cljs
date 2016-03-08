@@ -30,8 +30,7 @@
        [:div.select-bar
         [:i {:class (str "zmdi " (name icon-class))}]
         [(dropdown
-           {:data (do (println (filter (comp not :selected) (:data @state)))
-                      (filter (comp not :selected) (:data @state)))
+           {:data (filter (comp not :selected) (:data @state))
             :value ""
             :on-focus #(swap! state assoc :focus true)
             :on-blur #(swap! state assoc :focus false)

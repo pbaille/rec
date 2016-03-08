@@ -9,7 +9,7 @@
                      [{:id "dev"
                        :figwheel true
                        :source-paths ["src"]
-                       :compiler {:main 'rec.core
+                       :compiler {:main 'rec.example
                                   :asset-path "js/out"
                                   :output-to "resources/public/js/out/main.js"
                                   :output-dir "resources/public/js/out"

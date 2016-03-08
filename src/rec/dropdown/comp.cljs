@@ -97,10 +97,8 @@
          on-blur identity
          focus false
          on-select identity}}]
-  (println "data in" data)
   (let [uniq-class (str (gensym))
         formated (format-data data)
-        _ (println formated)
         state (atom {:data formated
                      :value value
                      :focus focus
@@ -154,14 +152,3 @@
 
 ;; tests --------------------------------------------------------------------
 
-(defn items [n]
-  (mapv #(str "item" %) (range n)))
-
-(def sample-data
-  {:cat1 (items 3)
-   :cat2 (items 5)
-   :cat3 (items 10)})
-
-(def dropdown1 [dropdown {:data sample-data}])
-
-(def dropdown2 [dropdown {:data (items 10)}])

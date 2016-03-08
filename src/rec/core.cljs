@@ -1,31 +1,14 @@
 (ns rec.core
   (:require [reagent.core :as r :refer [atom]]
-            [rec.dropdown.comp :refer [dropdown1 dropdown2]]
-            [rec.multiselect.comp :refer [multiselect]]
+            [rec.dropdown.comp :as dropdown]
+            [rec.multiselect.comp :as multiselect]
             [rec.ranges.comp :as ranges]
-            [rec.rangeslider.comp :refer [rangeslider multi-rangeslider]]))
+            [rec.rangeslider.comp :as rs]))
 
-(defn app []
-  [:div
-   dropdown1
-   dropdown2
-
-   [multiselect
-    {:data ["one" "two" "three" "four" "five" "six"]}]
-   [multiselect
-    {:data {:numbers ["one" "two" "three" "four" "five" "six"]
-            :animals ["dog" "cat" "cow" "rabbit"]}}]
-
-   [ranges/multirange
-    {:on-change (fn [x] (println x)) :min 0 :max 10}]
-
-   [multi-rangeslider {:range [0 1]
-                       :size 400
-                       :plot-size 4
-                       :height 20
-                       :on-change #(println "vals: " %)}]])
-
-(r/render-component [app]
-                    (.getElementById js/document "app"))
+(def dropdown dropdown/dropdown)
+(def multiselect multiselect/multiselect)
+(def multirange ranges/multirange)
+(def rangeslider rs/rangeslider)
+(def multi-rangeslider rs/multi-rangeslider)
 
 
