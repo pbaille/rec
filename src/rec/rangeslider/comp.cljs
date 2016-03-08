@@ -15,6 +15,13 @@
     (< x min) min
     :else x))
 
+(defn- round [x n]
+  (let [pd (js/Math.pow 10 n)]
+    (/ (js/Math.round (* x pd))
+       pd)))
+
+(round 1.234 2)
+
 (defn rangeslider [{:keys [height range size plot-size on-change] :as opts}]
   (let [id (gensym)
         state (atom {:plot1-dragged false
@@ -67,7 +74,7 @@
                :style {:width (str plot-size "px")
                        :height (str height "px")
                        :left (- (+ x-offset plot1-x) plot-size)}}
-              [:div.plot-label min]]
+              [:div.plot-label (round min 2)]]
 
              [:div.inside {:style {:left (+ x-offset plot1-x)
                                    :width (str (.abs js/Math (- plot1-x plot2-x)) "px")
@@ -79,7 +86,7 @@
                :style {:width (str plot-size "px")
                        :height (str height "px")
                        :left (+ x-offset plot2-x)}}
-              [:div.plot-label max]]]]))
+              [:div.plot-label (round max 2)]]]]))
 
        :component-did-mount
        #(swap! state assoc :x-offset (.-offsetLeft (.getElementById js/document id)))})))
@@ -89,7 +96,7 @@
                      :value {}})]
     (fn []
       [:div.multi-rangeslider
-       [:div.new-rs
+       [:div.add-rangeslider
         {:on-click
          (fn []
            (let [sym (gensym)]

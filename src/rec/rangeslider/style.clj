@@ -1,14 +1,11 @@
-(ns rec.rangeslider.style)
-
-(def unselectable
-  {:-webkit-user-select :none
-   :-moz-user-select :none
-   :-ms-user-select :none})
+(ns rec.rangeslider.style
+ (:require [rec.styles.common :refer [fonticons unselectable]]))
 
 (def styles
   [:body
    [:.rangeslider-container
     {:padding :20px
+     :padding-bottom :10px
      :display :inline-block}
     unselectable
     [:&.active {:cursor :ew-resize}]
@@ -35,11 +32,13 @@
        :display :inline-block
        :background :lightskyblue}
       unselectable]]]
+
    [:.multi-rangeslider
     {:color :grey}
-    [:i
-     {:font-size :22px}
-     [:&:hover
-      {:color :tomato}]]
-    [:span {:padding :10px
-            :font-size :18px}]]])
+    [:.add-rangeslider
+     {:background :#FAFAFA
+      :line-height :35px
+      :margin :10px
+      :margin-bottom :20px}
+     fonticons
+     [:span {:font-size :18px}]]]])
