@@ -10,8 +10,11 @@
    dropdown1
    dropdown2
 
-   #_[multiselect
+   [multiselect
     {:data ["one" "two" "three" "four" "five" "six"]}]
+   [multiselect
+    {:data {:numbers ["one" "two" "three" "four" "five" "six"]
+            :animals ["dog" "cat" "cow" "rabbit"]}}]
 
    #_[ranges/multirange
     {:on-change (fn [x] (println x)) :min 0 :max 10}]

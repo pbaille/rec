@@ -37,10 +37,13 @@
       :padding "6px 14px"
       :font-size :16px
       :margin "8px 8px 0 0"}
+     [:span.cat {:margin-right :4px :color :white}]
+
      [:&:hover
       {:background :tomato
        :padding "6px 8px"}
       [:i {:display :inline}]]
      [:i {:display :none
           :font-size :14px
+          :vertical-align :middle
           :margin-right "4px"}]]]])

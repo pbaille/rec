@@ -13,22 +13,18 @@
   (filter #(is-substring-of (:value state) (lower-case (:name %)))
           (:data state)))
 
-(defn- on-change [state str]
-  (let [data (:data @state)
-        typed-so-far (lower-case str)]
-    (swap! state
-           assoc
-           :propositions
-           (filter #(is-substring-of typed-so-far (lower-case %))
-                   data)
-           :value
-           typed-so-far)))
+(defn- formatted-item? [x]
+  (every? identity ((juxt :id :idx :name) x)))
 
-(defn find-by-kv [map-seq key val]
-  (first (filter #(when-let [v (key %)] (= v val)) map-seq)))
+(defn format-data
+  "format the data for usage in dropdown
+  can take data in two forms
+  1:
+  {:category1 [items ...] :category2 [items ...]}
+  2:
+  [items ...]
 
-(defn- format-data
-  "TODO when data passed to dropdown is an hashmap, group items"
+  => [{:id string :idx int :name string :category (maybe string)} ...]"
   [data]
   (cond
     (map? data)
@@ -40,35 +36,31 @@
                            items))
             data)
     (every? string? data)
-    (map-indexed #(hash-map :id %2 :idx %1 :name %2 :category nil) data)))
+    (map-indexed #(hash-map :id %2 :idx %1 :name %2 :category nil) data)
+    (every? formatted-item? data)
+    data))
 
-(defn items [n]
-  (mapv #(str "item" %) (range n)))
 
-(def sample-data
-  {:cat1 (items 3)
-   :cat2 (items 5)
-   :cat3 (items 10)})
 
-(defn highlighted-index [highlighted propositions]
+(defn- highlighted-index [highlighted propositions]
   (let [idx (.indexOf (clj->js (map :id propositions)) highlighted)]
     (when-not (= -1 idx) idx)))
 
-(defn nxt-item [highlighted propositions]
+(defn- nxt-item [highlighted propositions]
   (let [ps @propositions
         idx (highlighted-index highlighted ps)]
     (if (= idx (dec (count ps)))                            ;is last element
       (first ps)
       (nth ps (inc idx)))))
 
-(defn prev-item [highlighted propositions]
+(defn- prev-item [highlighted propositions]
   (let [ps @propositions
         idx (highlighted-index highlighted ps)]
     (if (zero? idx)                                         ;is first element
       (last ps)
       (nth ps (dec idx)))))
 
-(defn- find-by-id [map-seq id]
+(defn find-by-id [map-seq id]
   (first (filter #(when-let [v (:id %)] (= v id)) map-seq)))
 
 (defn key-handler [state propositions on-select! e]
@@ -82,7 +74,7 @@
       nil)))
 
 ;; stolen from re-com
-(defn show-selected-item
+(defn- show-selected-item
   [node]
   (let [item-offset-top (.-offsetTop node)
         item-offset-bottom (+ item-offset-top (.-clientHeight node))
@@ -105,8 +97,10 @@
          on-blur identity
          focus false
          on-select identity}}]
+  (println "data in" data)
   (let [uniq-class (str (gensym))
         formated (format-data data)
+        _ (println formated)
         state (atom {:data formated
                      :value value
                      :focus focus
@@ -158,8 +152,16 @@
                                (.indexOf (clj->js (map :id @propositions)) (:highlighted @state)))]
            (show-selected-item node)))})))
 
-(def dropdown1
-  [dropdown {:data sample-data}])
+;; tests --------------------------------------------------------------------
 
-(def dropdown2
-  [dropdown {:data (items 10)}])
+(defn items [n]
+  (mapv #(str "item" %) (range n)))
+
+(def sample-data
+  {:cat1 (items 3)
+   :cat2 (items 5)
+   :cat3 (items 10)})
+
+(def dropdown1 [dropdown {:data sample-data}])
+
+(def dropdown2 [dropdown {:data (items 10)}])
