@@ -1,12 +1,13 @@
-(ns rec.dropdown.style)
+(ns rec.dropdown.style
+  (:require [garden.units :refer [px]]))
 
-(def left-pad "8px")
+(def left-pad 8)
 (def input-height :35px)
 
 (def styles
   [:div.dropdown-container
    {:width :100%
-    :margin :10px
+    :margin (px 10)
     :position :relative}
    [:input
     {:width :100%
@@ -14,7 +15,7 @@
      :height input-height
      :font-size :14px
      :background-color :#FAFAFA
-     :padding-left left-pad}
+     :padding-left (px left-pad)}
 
     [:&:focus
      {:outline :none
@@ -25,12 +26,21 @@
      :left 0
      :right 0
      :z-index 1000}
-    [:.proposition
-     {:padding "2px"
-      :padding-left left-pad
-      :color :grey
-      :background :white
-      :height :25px
-      :vertical-align :middle}
-     [:&:hover :&.highlighted {:background :lightgrey}]
-     [:&.highlighted {:background :lightskyblue}]]]])
+    [:.category
+     [:.cat-title {:color :lightgrey
+                   :background :white
+                   :font-size :18px
+                   :line-height :30px
+                   :padding-left (px left-pad)
+                   :border-bottom "2px solid lightgrey"}]
+     [:&.invisible
+      [:.proposition {:padding-left (px left-pad)}]]
+     [:.proposition
+      {:padding (px 2)
+       :padding-left (px (* 2 left-pad))
+       :color :grey
+       :background :white
+       :height (px 25)
+       :vertical-align :middle}
+      [:&:hover :&.highlighted {:background :lightgrey}]
+      [:&.highlighted {:background :lightskyblue}]]]]])

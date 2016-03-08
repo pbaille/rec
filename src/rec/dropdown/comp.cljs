@@ -10,7 +10,7 @@
 (def lower-case clojure.string/lower-case)
 
 (defn- do-propositions [state]
-  (filter #(is-substring-of (:value state) (lower-case %))
+  (filter #(is-substring-of (:value state) (lower-case (:name %)))
           (:data state)))
 
 (defn- on-change [state str]
@@ -24,20 +24,61 @@
            :value
            typed-so-far)))
 
+(defn find-by-kv [map-seq key val]
+  (first (filter #(when-let [v (key %)] (= v val)) map-seq)))
+
 (defn- format-data
   "TODO when data passed to dropdown is an hashmap, group items"
-  [raw-data]
-  ())
+  [data]
+  (cond
+    (map? data)
+    (mapcat (fn [[cat items]]
+              (map-indexed (fn [idx item] {:id (str (name cat) "_" idx)
+                                           :idx idx
+                                           :name item
+                                           :category cat})
+                           items))
+            data)
+    (every? string? data)
+    (map-indexed #(hash-map :id %2 :idx %1 :name %2 :category nil) data)))
 
-(defn key-handler [state propositions e]
-  (let [stay-in-bounds #(mod % (count @propositions))]
+(defn items [n]
+  (mapv #(str "item" %) (range n)))
+
+(def sample-data
+  {:cat1 (items 3)
+   :cat2 (items 5)
+   :cat3 (items 10)})
+
+(defn highlighted-index [highlighted propositions]
+  (let [idx (.indexOf (clj->js (map :id propositions)) highlighted)]
+    (when-not (= -1 idx) idx)))
+
+(defn nxt-item [highlighted propositions]
+  (let [ps @propositions
+        idx (highlighted-index highlighted ps)]
+    (if (= idx (dec (count ps)))                            ;is last element
+      (first ps)
+      (nth ps (inc idx)))))
+
+(defn prev-item [highlighted propositions]
+  (let [ps @propositions
+        idx (highlighted-index highlighted ps)]
+    (if (zero? idx)                                         ;is first element
+      (last ps)
+      (nth ps (dec idx)))))
+
+(defn- find-by-id [map-seq id]
+  (first (filter #(when-let [v (:id %)] (= v id)) map-seq)))
+
+(defn key-handler [state propositions on-select! e]
+  (let [highlighted (:highlighted @state)]
     (case (.-which e)
-      40 (swap! state update :highlighted (comp stay-in-bounds inc))
-      38 (swap! state update :highlighted (comp stay-in-bounds dec))
-      13 (let [selected (nth @propositions (:highlighted @state))]
+      40 (swap! state assoc :highlighted (:id (nxt-item highlighted propositions)))
+      38 (swap! state assoc :highlighted (:id (prev-item highlighted propositions)))
+      13 (let [selected (find-by-id @propositions (:highlighted @state))]
            (.blur (.-target e))
-           ((:on-select @state) state selected)
-           (swap! state assoc :value selected))
+           (on-select! selected))
       nil)))
 
 ;; stolen from re-com
@@ -45,7 +86,7 @@
   [node]
   (let [item-offset-top (.-offsetTop node)
         item-offset-bottom (+ item-offset-top (.-clientHeight node))
-        parent (.-parentNode node)
+        parent (.-parentNode (.-parentNode node))
         parent-height (.-clientHeight parent)
         parent-visible-top (.-scrollTop parent)
         parent-visible-bottom (+ parent-visible-top parent-height)
@@ -65,23 +106,27 @@
          focus false
          on-select identity}}]
   (let [uniq-class (str (gensym))
-        state (atom {:data (apply sorted-set data)
+        formated (format-data data)
+        state (atom {:data formated
                      :value value
                      :focus focus
-                     :highlighted 0
+                     :highlighted (:id (first formated))
                      :class uniq-class
                      :on-select on-select})
         propositions (reaction (do-propositions @state))
-        set-value! #(swap! state assoc :value % :highlighted 0)
+        set-value! #(swap! state assoc
+                          :value %
+                          :highlighted (:id (first (do-propositions (assoc @state :value %)))))
         set-focus! #(do (swap! state assoc :focus %) ((if % on-focus on-blur) state))
-        on-select! (juxt (partial on-select state) set-value!)]
+        on-select! (juxt (partial on-select state) (comp set-value! :name))
+        has-categories? (:category (first formated))]
     (r/create-class
       {:reagent-render
        (fn []
          (let [highlighted (:highlighted @state)]
            [:div.dropdown-container
             {:class uniq-class}
-            [:input {:on-key-down (partial key-handler state propositions)
+            [:input {:on-key-down (partial key-handler state propositions on-select!)
                      :type "text"
                      :placeholder placeholder
                      :on-change #(set-value! (.. % -target -value))
@@ -94,14 +139,27 @@
                {:style {:max-height (:max-height options :100px)
                         :overflow-y :auto}}
                (doall
-                 (for [[p i] (map vector @propositions (range))]
+                 (for [[cat items] (group-by :category @propositions)]
                    ^{:key (gensym)}
-                   [:div.proposition
-                    {:class (when (= i highlighted) "highlighted")
-                     :on-mouse-down #(on-select! p)}
-                    p]))])]))
+                   [:div.category
+                    (if cat [:div.cat-title (name cat)]
+                            {:class "invisible"})
+                    (doall
+                      (for [{:keys [name id] :as item} (sort-by :idx items)]
+                        ^{:key (gensym)}
+                        [:div.proposition
+                         {:class (when (= id highlighted) "highlighted")
+                          :on-mouse-down #(on-select! item)}
+                         name]))]))])]))
+
        :component-did-update
        (fn [x]
          (when-let [node (aget (.getElementsByClassName js/document "proposition" (r/dom-node x))
-                               (:highlighted @state))]
+                               (.indexOf (clj->js (map :id @propositions)) (:highlighted @state)))]
            (show-selected-item node)))})))
+
+(def dropdown1
+  [dropdown {:data sample-data}])
+
+(def dropdown2
+  [dropdown {:data (items 10)}])
