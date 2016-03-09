@@ -75,6 +75,7 @@
      [:last-month [(t/ago (t/months 1)) midnight]]
      [:last-year [(t/ago (t/years 1)) midnight]]]))
 
+
 (defn daterange [{:keys [from to on-change]}]
   (let [state (r/atom {:from (format-date from)
                        :to (format-date to)
