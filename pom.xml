@@ -16,7 +16,7 @@
   <scm>
     <connection>scm:git:git://github.com/pbaille/rec.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/pbaille/rec.git</developerConnection>
-    <tag>cf2efd7edd6c5a5ef000707480bb310ff79b9a56
+    <tag>49bdf22dfb01d8a7e2cbac1e9fde2b40e14dc7f8
 </tag>
     <url>https://github.com/pbaille/rec</url>
   </scm>

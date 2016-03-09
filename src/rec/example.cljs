@@ -43,7 +43,13 @@
                        :size 400
                        :plot-size 4
                        :height 20
-                       :on-change #(println "vals: " %)}]])
+                       :on-change #(println "vals: " %)}]
+
+   [label "daterange"]
+   [rec/daterange
+    {:on-change (fn [x] (println x))
+     :from "20160101131313"
+     :to "20160123123456"}]])
 
 (r/render-component [app]
                     (.getElementById js/document "app"))

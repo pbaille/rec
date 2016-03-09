@@ -9,6 +9,7 @@
                  [figwheel-sidecar "0.5.0"]
                  [cljs-http "0.1.39"]
                  [reagent "0.6.0-alpha"]
+                 [re-com "0.8.0"]
                  [garden "1.3.2"]]
   :plugins [[lein-cljsbuild "1.1.0"]
             [lein-garden "0.2.6"]]
