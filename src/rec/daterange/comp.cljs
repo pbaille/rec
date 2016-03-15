@@ -66,20 +66,51 @@
   (reset! d (assoc-time @d time-string)))
 
 (defn presets []
-  (let [midnight (t/today-at 23 59 59)]
-    [[:today [(t/today-at-midnight) midnight]]
+  (let [end-of-today (t/today-at 23 59 59 999)]
+    [[:today [(t/today-at-midnight) end-of-today]]
      [:yesterday [(t/at-midnight (t/yesterday)) (t/today-at-midnight)]]
-     [:last-hour [(t/ago (t/hours 1)) midnight]]
-     [:last-48h [(t/ago (t/days 2)) midnight]]
-     [:last-week [(t/ago (t/weeks 1)) midnight]]
-     [:last-month [(t/ago (t/months 1)) midnight]]
-     [:last-year [(t/ago (t/years 1)) midnight]]]))
+     [:last-hour [(t/ago (t/hours 1)) (t/now)]]
+     [:last-48h [(t/ago (t/days 2)) (t/now)]]
+     [:last-week [(t/ago (t/weeks 1)) (t/now)]]
+     [:last-month [(t/ago (t/months 1)) (t/now)]]
+     [:last-year [(t/ago (t/years 1)) (t/now)]]]))
 
+(defn tomorow-at-midnight []
+  (t/plus (t/today-at-midnight) (t/days 1)))
 
-(defn daterange [{:keys [from to on-change]}]
+(def presets*
+  {:today (fn [] {:from (t/today-at-midnight) :to (t/today-at 23 59 59 999) :refresh (tomorow-at-midnight)})
+   :yesterday (fn [] {:from (t/at-midnight (t/yesterday)) :to (t/today-at-midnight) :refresh (tomorow-at-midnight)})
+   :last-hour (fn [] {:from (t/ago (t/hours 1)) :refresh (t/from-now (t/minutes 1))})
+   :last-48h (fn [] {:from (t/ago (t/days 2)) :refresh (t/from-now (t/hours 1))})
+   :last-week (fn [] {:from (t/ago (t/weeks 1)) :refresh (t/from-now (t/days 1))})
+   :last-month (fn [] {:from (t/ago (t/months 1)) :refresh (t/from-now (t/days 1))})
+   :last-year (fn [] {:from (t/ago (t/years 1)) :refresh (t/from-now (t/days 1))})})
+
+(def preset-seq
+  [:today
+   :yesterday
+   :last-hour
+   :last-48h
+   :last-week
+   :last-month
+   :last-year])
+
+(defn now-based?
+  "true if p is a sliding time interval relative to now"
+  [p]
+  (not (:to p)))
+
+(defn refresh?
+  "return true if the passed preset has to refresh"
+  [p]
+  (t/after? (t/now) (:refresh p)))
+
+(defn daterange [{:keys [from to on-change preset]}]
   (let [state (r/atom {:from (format-date from)
                        :to (format-date to)
-                       :open false})
+                       :open false
+                       :preset nil})
         from (r/cursor state [:from])
         to (r/cursor state [:to])
         from-hm (reaction (date->hm @from))
@@ -92,7 +123,7 @@
        [:div.presets
         (for [[n [f t]] (presets)]
           ^{:key (gensym)}
-          [:span.preset {:on-click #(swap! state assoc :from f :to t)}
+          [:span.preset {:on-click #(swap! state assoc :from f :to t :preset n)}
            (name n)])]
        [:div.datefrom
         [(fn []
@@ -121,3 +152,24 @@
                              :on-return to-timepicker-cb}
                             @to-hm))]]])))
 
+(defn- input-helper [state kw on-change]
+  ^{:key (gensym)}
+  [:span.period-section
+   [:input {:style {:width "30px"
+                    :border 0
+                    :outline :none
+                    :text-align :right}
+            :class (name kw)
+            :type "number"
+            :default-value (or (kw @state) 0)
+            :min 0
+            :on-change #(do (swap! state assoc kw (.. % -target -value))
+                            (on-change @state))}]
+   [:span (name kw)]])
+
+(defn time-period [opts]
+  (let [state (atom (t/map->Period (:period opts)))]
+    (fn []
+      [:div.sliding-timerange-selector
+       (for [kw [:years :months :days :hours :minutes :seconds]]
+         (input-helper state kw (:on-change opts identity)))])))

@@ -49,7 +49,11 @@
    [rec/daterange
     {:on-change (fn [x] (println x))
      :from "20160101131313"
-     :to "20160123123456"}]])
+     :to "20160123123456"}]
+
+   [rec/time-period {:on-change #(println %)}]
+
+   [rec/multitoggle {:xs ["foo" "bar" "baz"] :max-selected 2 :on-change #(println %)}]])
 
 (r/render-component [app]
                     (.getElementById js/document "app"))

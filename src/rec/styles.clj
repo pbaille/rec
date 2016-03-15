@@ -8,7 +8,8 @@
             [rec.ranges.style :as r]
             [rec.styles.common :refer [border-box]]
             [rec.timepicker.style :as tp]
-            [rec.daterange.style :as dr]))
+            [rec.daterange.style :as dr]
+            [rec.multitoggle.style :as mt]))
 
 (defstyles styles
            ac/styles
@@ -17,4 +18,5 @@
            rs/styles
            tp/styles
            dr/styles
+           mt/styles
            border-box)

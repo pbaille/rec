@@ -4,7 +4,8 @@
             [rec.multiselect.comp :as multiselect]
             [rec.ranges.comp :as ranges]
             [rec.rangeslider.comp :as rs]
-            [rec.daterange.comp :as dr]))
+            [rec.daterange.comp :as dr]
+            [rec.multitoggle.comp :as mt]))
 
 (def dropdown dropdown/dropdown)
 (def multiselect multiselect/multiselect)
@@ -12,5 +13,7 @@
 (def rangeslider rs/rangeslider)
 (def multi-rangeslider rs/multi-rangeslider)
 (def daterange dr/daterange)
+(def time-period dr/time-period)
+(def multitoggle mt/multitoggle)
 
 

@@ -24,7 +24,7 @@
                 :margin :2px
                 :padding :4px
                 :color :#777
-                :font-size :16px}
+                :font-size :14px}
       [:&:hover {:background :lightskyblue
                  :color :white}]]]
     [:.timepicker {:color :#777
@@ -32,7 +32,7 @@
                    :display :block
                    :margin :auto
                    :height :30px
-                   :font-size :16px
+                   :font-size :14px
                    :padding-left :18px
                    :background :#F7F7F7
                    :cursor :pointer}]]])

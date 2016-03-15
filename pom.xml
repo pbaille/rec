@@ -16,7 +16,7 @@
   <scm>
     <connection>scm:git:git://github.com/pbaille/rec.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/pbaille/rec.git</developerConnection>
-    <tag>49bdf22dfb01d8a7e2cbac1e9fde2b40e14dc7f8
+    <tag>661010546bdc6dbc29a77800871ff50f011ba2dc
 </tag>
     <url>https://github.com/pbaille/rec</url>
   </scm>
@@ -110,6 +110,11 @@
       <groupId>reagent</groupId>
       <artifactId>reagent</artifactId>
       <version>0.6.0-alpha</version>
+    </dependency>
+    <dependency>
+      <groupId>re-com</groupId>
+      <artifactId>re-com</artifactId>
+      <version>0.8.0</version>
     </dependency>
     <dependency>
       <groupId>garden</groupId>
