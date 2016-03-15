@@ -65,46 +65,51 @@
 (defn assoc-time! [d time-string]
   (reset! d (assoc-time @d time-string)))
 
+(defn at
+  "set the hours of the given date"
+  ([date hours minutes seconds millis]
+   (doto date
+     (.setHours hours)
+     (.setMinutes minutes)
+     (.setSeconds seconds)
+     (.setMilliseconds millis)))
+  ([date hours minutes seconds]
+   (at date hours minutes seconds 0))
+  ([date hours minutes]
+   (at date hours minutes 0)))
+
 (defn presets []
   (let [end-of-today (t/today-at 23 59 59 999)]
     [[:today [(t/today-at-midnight) end-of-today]]
-     [:yesterday [(t/at-midnight (t/yesterday)) (t/today-at-midnight)]]
+     [:yesterday [(t/at-midnight (t/yesterday)) (at (t/yesterday) 23 59 59 999)]]
      [:last-hour [(t/ago (t/hours 1)) (t/now)]]
      [:last-48h [(t/ago (t/days 2)) (t/now)]]
      [:last-week [(t/ago (t/weeks 1)) (t/now)]]
      [:last-month [(t/ago (t/months 1)) (t/now)]]
      [:last-year [(t/ago (t/years 1)) (t/now)]]]))
 
-(defn tomorow-at-midnight []
-  (t/plus (t/today-at-midnight) (t/days 1)))
+(defn t>=
+  "same as t/after? but return true if t1 and t2 are simultaneous"
+  [t1 t2]
+  (if (t/after? t1 t2)
+    true
+    (not (t/before? t1 t2))))
 
-(def presets*
-  {:today (fn [] {:from (t/today-at-midnight) :to (t/today-at 23 59 59 999) :refresh (tomorow-at-midnight)})
-   :yesterday (fn [] {:from (t/at-midnight (t/yesterday)) :to (t/today-at-midnight) :refresh (tomorow-at-midnight)})
-   :last-hour (fn [] {:from (t/ago (t/hours 1)) :refresh (t/from-now (t/minutes 1))})
-   :last-48h (fn [] {:from (t/ago (t/days 2)) :refresh (t/from-now (t/hours 1))})
-   :last-week (fn [] {:from (t/ago (t/weeks 1)) :refresh (t/from-now (t/days 1))})
-   :last-month (fn [] {:from (t/ago (t/months 1)) :refresh (t/from-now (t/days 1))})
-   :last-year (fn [] {:from (t/ago (t/years 1)) :refresh (t/from-now (t/days 1))})})
+(defn t<=
+  "same as t/before? but return true if t1 and t2 are simultaneous"
+  [t1 t2]
+  (if (t/before? t1 t2)
+    true
+    (not (t/after? t1 t2))))
 
-(def preset-seq
-  [:today
-   :yesterday
-   :last-hour
-   :last-48h
-   :last-week
-   :last-month
-   :last-year])
+(comment "tests"
+         (t>= (t/today-at-midnight) (t/today-at 12 12))
+         (t>= (t/today-at 12 12) (t/today-at-midnight))
+         (t<= (t/today-at-midnight) (t/today-at-midnight))
 
-(defn now-based?
-  "true if p is a sliding time interval relative to now"
-  [p]
-  (not (:to p)))
-
-(defn refresh?
-  "return true if the passed preset has to refresh"
-  [p]
-  (t/after? (t/now) (:refresh p)))
+         (t<= (t/today-at-midnight) (t/today-at 12 12))
+         (t<= (t/today-at 12 12) (t/today-at-midnight))
+         (t<= (t/today-at-midnight) (t/today-at-midnight)))
 
 (defn daterange [{:keys [from to on-change preset]}]
   (let [state (r/atom {:from (format-date from)
@@ -130,9 +135,11 @@
            [rc/datepicker
             :on-change (fn [x]
                          (swap! state update :from #(assoc-time x (date->hm %)))
+                         (when (t/before? @to @from) ;; when same day is selected ensure that hour coherent
+                           (swap! state update :from #(assoc-time x (date->hm @to))))
                          (on-change @value))
             :show-today? true
-            :selectable-fn (fn [x] (<= (.valueOf x) (.valueOf @to)))
+            :selectable-fn (partial t>= (t/at-midnight @to))
             :model from
             :hide-border? true])]
         [(timepicker (merge {:on-blur from-timepicker-cb
@@ -143,14 +150,18 @@
            [rc/datepicker
             :on-change (fn [x]
                          (swap! state update :to #(assoc-time x (date->hm %)))
+                         (when (t/before? @to @from) ;; when same day is selected ensure that hour coherent
+                           (swap! state update :to #(assoc-time x (date->hm @from))))
                          (on-change @value))
             :show-today? true
-            :selectable-fn (fn [x] (>= (.valueOf x) (.valueOf @from)))
+            :selectable-fn (partial t<= (t/at-midnight @from))
             :model to
             :hide-border? true])]
         [(timepicker (merge {:on-blur to-timepicker-cb
                              :on-return to-timepicker-cb}
                             @to-hm))]]])))
+
+;; timeperiod picker ---------------------------------------
 
 (defn- input-helper [state kw on-change]
   ^{:key (gensym)}
