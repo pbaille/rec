@@ -9,7 +9,10 @@
             [rec.styles.common :refer [border-box]]
             [rec.timepicker.style :as tp]
             [rec.daterange.style :as dr]
-            [rec.multitoggle.style :as mt]))
+            [rec.multitoggle.style :as mt]
+            [rec.tokens.style :as t]
+            [rec.multirangeslider.style :as mrs]
+            [rec.locationpicker.style :as lp]))
 
 (defstyles styles
            ac/styles
@@ -19,4 +22,7 @@
            tp/styles
            dr/styles
            mt/styles
+           t/styles
+           mrs/styles
+           lp/styles
            border-box)

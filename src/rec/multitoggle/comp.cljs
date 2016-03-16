@@ -11,14 +11,16 @@
   (on-change (:selected @state)))
 
 (defn multitoggle
-  [{:keys [on-change xs max-selected]
+  [{:keys [title on-change xs max-selected]
     :as opts
-    :or {on-change identity}}]
+    :or {on-change identity title "multitoggle"}}]
 
   (let [state (atom {:xs (set xs)
                      :selected ()})]
     (fn []
       [:div.multitoggle.btn-group
+       [:span.multitoggle-item.delete-button.btn.btn-default [:i.fa.fa-times]]
+       [:div.multitoggle-item.btn.btn-default.title title]
        (doall
          (for [x (:xs @state)]
            ^{:key (gensym)}

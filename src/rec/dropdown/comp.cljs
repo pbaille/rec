@@ -1,6 +1,7 @@
 (ns rec.dropdown.comp
   (:require-macros [reagent.ratom :refer [reaction]])
-  (:require [reagent.core :as r :refer [atom]]))
+  (:require [reagent.core :as r :refer [atom]]
+            [re-com.core :as rc]))
 
 (enable-console-print!)
 
@@ -107,8 +108,8 @@
                      :on-select on-select})
         propositions (reaction (do-propositions @state))
         set-value! #(swap! state assoc
-                          :value %
-                          :highlighted (:id (first (do-propositions (assoc @state :value %)))))
+                           :value %
+                           :highlighted (:id (first (do-propositions (assoc @state :value %)))))
         set-focus! #(do (swap! state assoc :focus %) ((if % on-focus on-blur) state))
         on-select! (juxt (partial on-select state) (comp set-value! :name))
         has-categories? (:category (first formated))]
@@ -151,4 +152,3 @@
            (show-selected-item node)))})))
 
 ;; tests --------------------------------------------------------------------
-

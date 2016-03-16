@@ -1,6 +1,9 @@
 (ns rec.example
   (:require [reagent.core :as r :refer [atom]]
-            [rec.core :as rec]))
+            [rec.core :as rec]
+            [rec.tokens.comp :refer [tokens]]
+            [rec.multirangeslider.comp :as mrs]
+            [rec.locationpicker.comp :as lp]))
 
 (defn items [n]
   (mapv #(str "item" %) (range n)))
@@ -53,7 +56,16 @@
 
    [rec/time-period {:on-change #(println %)}]
 
-   [rec/multitoggle {:xs ["foo" "bar" "baz"] :max-selected 2 :on-change #(println %)}]])
+   [rec/multitoggle {:xs ["foo" "bar" "baz"] :max-selected 2 :on-change #(println %)}]
+
+   [tokens {:style {:width "300px"} :on-change #(println %)}]
+
+   #_[mrs/rangeslider {:min 0 :max 10}]
+   [mrs/multi-rangeslider {:min 0 :max 10 :on-change #(println %)}]
+
+   [lp/locationpicker]
+
+   #_[rec/bs-rangeslider {:min 0 :max 10}]])
 
 (r/render-component [app]
                     (.getElementById js/document "app"))
