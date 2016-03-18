@@ -11,10 +11,7 @@
 (def multiselect multiselect/multiselect)
 (def multirange ranges/multirange)
 (def rangeslider rs/rangeslider)
-(def bs-rangeslider rs/bs-rangeslider)
 (def multi-rangeslider rs/multi-rangeslider)
 (def daterange dr/daterange)
 (def time-period dr/time-period)
 (def multitoggle mt/multitoggle)
-
-

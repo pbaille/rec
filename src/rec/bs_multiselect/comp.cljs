@@ -1,7 +1,7 @@
-(ns rec.multiselect.comp
+(ns rec.bs-multiselect.comp
   (:require-macros [reagent.ratom :refer [reaction]])
   (:require [reagent.core :as r :refer [atom]]
-            [rec.dropdown.comp :refer [dropdown format-data find-by-id]]))
+            [rec.bs-dropdown.comp :refer [bs-dropdown format-data find-by-id]]))
 
 (defn- set-selection! [state item selected?]
   (swap! state
@@ -12,7 +12,7 @@
                 %)
               (:data @state))))
 
-(defn multiselect
+(defn bs-multiselect
   [{:keys [data selected placeholder on-change icon-class]
     :or {selected []
          data []
@@ -24,21 +24,18 @@
                      :focus false})
         selected (reaction (filter :selected (:data @state)))]
     (fn []
-      [:div.multiselect-container
+      [:div.bs-multiselect-container
        {:class (when (:focus @state) "active")}
-       ;; :o
-       [:div.select-bar
-        [:i {:class (str "zmdi " (name icon-class))}]
-        [(dropdown
-           {:data (filter (comp not :selected) (:data @state))
-            :placeholder placeholder
-            :value ""
-            :on-focus #(swap! state assoc :focus true)
-            :on-blur #(swap! state assoc :focus false)
-            :focus (:focus @state)
-            :on-select (fn [_ item]
-                         (set-selection! state item true)
-                         (on-change @selected))})]]
+       [(bs-dropdown
+          {:data (filter (comp not :selected) (:data @state))
+           :placeholder placeholder
+           :value ""
+           :on-focus #(swap! state assoc :focus true)
+           :on-blur #(swap! state assoc :focus false)
+           :focus (:focus @state)
+           :on-select (fn [_ item]
+                        (set-selection! state item true)
+                        (on-change @selected))})]
        [:div.selected-container
         (for [item @selected]
           ^{:key (gensym)}

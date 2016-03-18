@@ -3,7 +3,9 @@
             [garden.units :refer [px]]
 
             [rec.dropdown.style :as ac]
+            [rec.bs-dropdown.style :as bsdd]
             [rec.multiselect.style :as ms]
+            [rec.bs-multiselect.style :as bsms]
             [rec.rangeslider.style :as rs]
             [rec.ranges.style :as r]
             [rec.styles.common :refer [border-box]]
@@ -16,7 +18,9 @@
 
 (defstyles styles
            ac/styles
+           bsdd/styles
            ms/styles
+           bsms/styles
            r/styles
            rs/styles
            tp/styles

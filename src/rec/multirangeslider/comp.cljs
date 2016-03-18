@@ -80,5 +80,6 @@
                                            (on-change (map :value (vals (:sliders @state)))))}]}))}
              [:span.fa.fa-plus]]))]
        [:div.ranges
+        {:style {:padding :20px}}
         (for [[s {:keys [comp]}] (:sliders @state)]
           comp)]])))
