@@ -141,7 +141,7 @@
                     (doall
                       (for [{:keys [name id] :as item} (sort-by :idx items)]
                         ^{:key (gensym)}
-                        [:div.proposition.btn.btn-default
+                        [:div.proposition
                          {:class (when (= id highlighted) "highlighted")
                           :on-mouse-down #(on-select! item)}
                          name]))]))])]))
