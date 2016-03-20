@@ -6,16 +6,12 @@
 
 (def styles
   [:div.bs-dropdown-container
-   {:position :relative}
+   #_{:position :relative}
    [:input
     {:width :100%
      :height input-height
      :font-size :14px
-     :padding-left (px left-pad)}
-
-    #_[:&:focus
-     {:outline :none
-      :border-bottom :none}]]
+     :padding-left (px left-pad)}]
    [:.propositions
     {:position :absolute
      :top input-height
@@ -25,13 +21,14 @@
      :border-radius :5px
      :border "1px solid lightgrey"}
     [:.category
-     {:width :100%}
+     {:width :100%
+      :background :white}
      [:.cat-title {:color :lightgrey
                    :background :white
-                   :font-size :18px
-                   :line-height :35px
+                   :font-size :14px
+                   :line-height :30px
                    :padding-left (px left-pad)
-                   :border-bottom "2px solid lightgrey"}]
+                   :border-bottom "1px solid lightgrey"}]
      [:&.unique
       [:.proposition {:padding-left (px left-pad)}]]
      [:.proposition
@@ -40,9 +37,9 @@
        :padding-left (px (* 2 left-pad))
        :color :grey
        :text-align :left
-       :background :white
        :line-height :30px
        :height (px 30)
        :vertical-align :middle}
       [:&:hover :&.highlighted {:background :lightgrey}]
-      [:&.highlighted {:background :lightskyblue}]]]]])
+      [:&.highlighted {:background :lightskyblue
+                       :color :white}]]]]])

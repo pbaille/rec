@@ -2,10 +2,11 @@
 
 (def styles
   [:.multitoggle
+   [:.icon {:background :#eee}]
    [:.multitoggle-item
     {:display :inline-block}
-    [:&.delete-button {:border-right 0
-                       :padding "6px 8px"}
+    [:&.delete-button {:padding "6px 8px"
+                       :border-left 0}
      [:&:hover {:color :tomato
                 :background-color :transparent
                 :border-color :#ccc}]]

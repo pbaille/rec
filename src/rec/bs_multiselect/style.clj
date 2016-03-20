@@ -3,23 +3,14 @@
 (def styles
   [:.bs-multiselect-container
    [:&.active [:.zmdi {:color :tomato}]]
-   [:.dropdown-container
-    {:display :inline-block
-     :margin 0
-     :width :100%}
-    [:.propositions {:border 0
-                     :width :100%
-                     :background :#FAFAFA}
-     [:.proposition {:background :transparent}
-      [:&.highlighted {:background :lightskyblue
-                       :color :white}]
-      [:&:hover {:background :lightgrey
-                 :color :white}]]]
-    [:input
-     {:background :transparent
-      :padding 0}
-     [:&:focus {:padding-left :8px
-                :border {:top 0 :left 0 :right 0}}]]]
+   [:.delete-button {:background-color :transparent
+                     :padding "6px 8px"
+                     :border-left 0}
+    [:&:hover {:color :tomato
+               :border-color :#ccc
+               :border-left 0}]]
+   [:.bs-dropdown-container {:border-right 0
+                             :box-shadow :none}]
    [:.selected-container
     {:position :relative}
     [:.selected-item

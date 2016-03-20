@@ -1,14 +1,14 @@
 (ns rec.tokens.comp
-  (:require [reagent.core :as r :refer [atom]]))
+  (:require [reagent.core :as r :refer [atom]]
+            [rec.bs-dropdown.comp :refer [bs-dropdown]]))
 
 (def width "100px")
 
 (defn tokens [{:keys [on-change style]}]
-  (let [state (atom {:selected "text"
-                     :options ["text" "author" "hashtag"]
+  (let [state (atom {:selected nil
+                     :options ["Text" "Author" "Hashtag"]
                      :input-focus false
-                     :values #{}
-                     :hover false})
+                     :values #{}})
         values-idx (cljs.core/atom 0)
         input-el #(js/$ "input" ".tokens-container")
         focus #(.focus (input-el))
@@ -19,20 +19,19 @@
         select-text #(.select (input-el))]
     (fn []
       [:div.tokens-container
-       {:style style
-        :on-mouse-enter #(swap! state assoc :hover true)
-        :on-mouse-leave #(swap! state assoc :hover false)}
+       {:style style}
        [:div.input-group
         [:div.input-group-addon [:span.fa.fa-search]]
         [:div.dropdown.input-group-addon
-         {:style {:width "100px"
-                  :cursor :pointer}}
+         {:style {:width "100px" :cursor :pointer :border-right 0}}
          [:span#tokens-dd
           {:data-target "#"
            :data-toggle "dropdown"
            :aria-haspopup "true"
            :aria-expanded "false"}
-          (:selected @state)]
+          (or (:selected @state) "Type")
+          "  "
+          [:span.caret {:style {:margin-left :15px}}]]
          [:ul.dropdown-menu
           {:aria-labelledby "tokens-dd"
            :style {:min-width :100%}}
@@ -47,20 +46,29 @@
          {:type "text"
           :on-key-up (fn [e] (when (and (= (.. e -nativeEvent -keyCode) 13)
                                         (seq (.. e -target -value)))
-                               (let [v (with-meta {:type (:selected @state) :value (.. e -target -value)}
-                                                  {:idx (inc @values-idx)})]
-                                 (swap! state update :values conj v)
-                                 (blur)
-                                 (clear)
-                                 (on-change (:values @state)))))}]
+                               (if (:selected @state)
+                                 (do (reset! state
+                                             (-> @state
+                                                 (update :values conj (with-meta {:type (:selected @state) :value (.. e -target -value)}
+                                                                                 {:idx (inc @values-idx)}))
+                                                 (assoc :selected nil)))
+                                     (blur)
+                                     (clear)
+                                     (on-change (:values @state)))
+                                 (.click (js/$ "#tokens-dd")))))
+          :placeholder "Enter value"}]
         [:span.input-group-addon
          {:on-click (fn []
                       (let [v (get-val)]
                         (when (seq v)
-                          (swap! state update :values conj (with-meta {:type (:selected @state) :value v}
+                          (reset! state
+                                  (-> @state
+                                      (update :values conj (with-meta {:type (:selected @state) :value v}
                                                                       {:idx (inc @values-idx)}))
+                                      (assoc :selected nil)))
                           (clear)
-                          (on-change (:values @state)))))}
+                          (on-change (:values @state)))))
+          }
          [:i.fa.fa-check]]]
        [:div.values
         {:style {:padding-left :20px}}
@@ -76,6 +84,7 @@
                             (select-text))]
               ^{:key (gensym)}
               [:div
+               {:style {:margin-top :20px}}
                [:div.value.btn-group
                 [:span.delete-button.fa.fa-times.btn.btn-default
                  {:on-click #(swap! state update :values disj v)
@@ -86,26 +95,40 @@
                 [:span.btn.btn-default.value-txt {:on-click edit
                                                   :style (when (:hover @state) {:padding-right 1
                                                                                 :border-right 0})} value]
-                (when (:hover @state) [:span.btn.btn-default.value-edit
-                                       {:on-click edit}
-                                       [:span.fa.fa-pencil]])]])))]])))
+                [:span.btn.btn-default.value-edit
+                 {:on-click edit}
+                 [:span.fa.fa-pencil]]]])))]])))
 
 
 (defn tags [{:keys [on-change style data]}]
-  (let [state (atom {:selected "Queries"
+  (let [state (atom {:selected-type nil
                      :options ["Queries" "Tags" "Tag-groups"]
                      :data data
+                     :value-focus false
                      :values #{}})
+
         values-idx (cljs.core/atom 0)
-        current-choices #(clojure.set/difference
-                          (set (get-in @state [:data (keyword (clojure.string/lower-case (:selected @state)))]))
-                          (set (map :value (:values @state))))
-        add-to-values #(swap! state update :values conj
-                              (with-meta {:type (:selected @state) :value %}
-                                         {:idx (inc @values-idx)}))
+
+        current-choices #(if (:selected-type @state)
+                           (clojure.set/difference
+                             (set (get-in @state [:data (keyword (clojure.string/lower-case (:selected-type @state)))]))
+                             (set (map :value (:values @state))))
+                           (into {}
+                                 (map (fn [[k v]]
+                                        [k (clojure.set/difference
+                                             (set v)
+                                             (set (map :value (:values @state))))])
+                                      (:data @state))))
+        add-to-values #(reset! state
+                               (-> @state
+                                   (update :values conj
+                                           (with-meta {:type (or (and %2 (name %2)) (:selected-type @state))
+                                                       :value %}
+                                                      {:idx (inc @values-idx)}))
+                                   (assoc :selected-type nil
+                                          :value-focus false)))
 
         category-dropdown-id (str (gensym))
-        items-dropdown-id (str (gensym))
 
         dropdowns-attrs {:data-target "#"
                          :data-toggle "dropdown"
@@ -114,58 +137,130 @@
 
         dropdowns-li-style {:height "30px"
                             :text-align :center
-                            :line-height :30px}]
+                            :line-height :30px}
+        singularize-type {"queries" "Query"
+                          "Queries" "Query"
+                          "tags" "Tag"
+                          "Tags" "Tag"
+                          "tag-groups" "Tag-group"
+                          "Tag-groups" "Tag-group"}]
 
     (fn []
-      [:div.tokens-container
+      [:div.tags-container
        {:style style}
        [:div.input-group
         {:style {:width :100%}}
         [:div.input-group-addon [:span.fa.fa-tags]]
         [:div.dropdown.input-group-addon
-         {:style {:width "100px" :cursor :pointer}}
+         {:style {:width "100px" :cursor :pointer :border-right 0}}
          [:span
           (assoc dropdowns-attrs :id category-dropdown-id)
-          (:selected @state)
+          (or (:selected-type @state) "Type")
           "  "
           [:span.caret {:style {:margin-left :15px}}]]
          [:ul.dropdown-menu
           {:aria-labelledby category-dropdown-id
            :style {:min-width :100%}}
-          (for [o (disj (set (:options @state)) (:selected @state))]
+          (for [o (disj (set (:options @state)) (:selected-type @state))]
             ^{:key (gensym)}
             [:li {:style dropdowns-li-style
-                  :on-click #(do (swap! state assoc :selected o))}
+                  :on-click #(swap! state assoc :selected-type o :value-focus true)}
              o])]]
-        [:div.dropdown.form-control
-         {:style {:cursor :pointer}}
-         [:span.dropdown-toggle
-          (assoc dropdowns-attrs :id items-dropdown-id :style {:min-width :100%})
-          "select "
-          [:span.caret {:style {:margin-left :15px}}]]
-
-         [:ul.dropdown-menu
-          {:aria-labelledby items-dropdown-id}
-          (for [o (current-choices)]
-            ^{:key (gensym)}
-            [:li {:style dropdowns-li-style
-                  :on-click #(add-to-values o)}
-             o])]]]
+        [(bs-dropdown
+           {:data (current-choices)
+            :placeholder "Select something"
+            :focus (:value-focus @state)
+            :on-select #(add-to-values (:name %2) (:category %2))})]]
        [:div.values
         {:style {:padding-left :20px}}
         (for [{:keys [type value] :as v} (sort-by (comp :idx meta) (:values @state))]
           ^{:key (gensym)}
           [:div
+           {:style {:margin-top :20px}}
            [:div.value.btn-group
             [:span.delete-button.fa.fa-times.btn.btn-default
              {:on-click #(swap! state update :values disj v)
               :style {:line-height :32px
                       :padding "0 10px"
                       :vertical-align :middle}}]
-            [:span.btn.btn-default.value-type type]
+            [:span.btn.btn-default.value-type (singularize-type type)]
             [:span.btn.btn-default.value-txt value]]])]])))
 
 (comment "previous attempts"
+
+         (defn tags [{:keys [on-change style data]}]
+           (let [state (atom {:selected nil
+                              :options ["Queries" "Tags" "Tag-groups"]
+                              :data data
+                              :values #{}})
+                 values-idx (cljs.core/atom 0)
+                 current-choices #(clojure.set/difference
+                                   (set (get-in @state [:data (when (:selected @state) (keyword (clojure.string/lower-case (:selected @state))))]))
+                                   (set (map :value (:values @state))))
+                 add-to-values #(swap! state update :values conj
+                                       (with-meta {:type (:selected @state) :value %}
+                                                  {:idx (inc @values-idx)}))
+
+                 category-dropdown-id (str (gensym))
+                 items-dropdown-id (str (gensym))
+
+                 dropdowns-attrs {:data-target "#"
+                                  :data-toggle "dropdown"
+                                  :aria-haspopup "true"
+                                  :aria-expanded "false"}
+
+                 dropdowns-li-style {:height "30px"
+                                     :text-align :center
+                                     :line-height :30px}]
+
+             (fn []
+               [:div.tokens-container
+                {:style style}
+                [:div.input-group
+                 {:style {:width :100%}}
+                 [:div.input-group-addon [:span.fa.fa-tags]]
+                 [:div.dropdown.input-group-addon
+                  {:style {:width "100px" :cursor :pointer}}
+                  [:span
+                   (assoc dropdowns-attrs :id category-dropdown-id)
+                   (or (:selected @state) "Type")
+                   "  "
+                   [:span.caret {:style {:margin-left :15px}}]]
+                  [:ul.dropdown-menu
+                   {:aria-labelledby category-dropdown-id
+                    :style {:min-width :100%}}
+                   (for [o (disj (set (:options @state)) (:selected @state))]
+                     ^{:key (gensym)}
+                     [:li {:style dropdowns-li-style
+                           :on-click #(do (swap! state assoc :selected o))}
+                      o])]]
+                 [:div.dropdown.form-control
+                  {:style {:cursor :pointer}}
+                  [:span.dropdown-toggle
+                   (assoc dropdowns-attrs :id items-dropdown-id :style {:min-width :100%})
+                   "select "
+                   [:span.caret {:style {:margin-left :15px}}]]
+
+                  [:ul.dropdown-menu
+                   {:aria-labelledby items-dropdown-id}
+                   (for [o (current-choices)]
+                     ^{:key (gensym)}
+                     [:li {:style dropdowns-li-style
+                           :on-click #(add-to-values o)}
+                      o])]]]
+                [:div.values
+                 {:style {:padding-left :20px}}
+                 (for [{:keys [type value] :as v} (sort-by (comp :idx meta) (:values @state))]
+                   ^{:key (gensym)}
+                   [:div
+                    [:div.value.btn-group
+                     [:span.delete-button.fa.fa-times.btn.btn-default
+                      {:on-click #(swap! state update :values disj v)
+                       :style {:line-height :32px
+                               :padding "0 10px"
+                               :vertical-align :middle}}]
+                     [:span.btn.btn-default.value-type type]
+                     [:span.btn.btn-default.value-txt value]]])]])))
 
          (defn tags* [{:keys [on-change style choices]}]
            (let [state (atom {:selected (name (first (keys choices)))

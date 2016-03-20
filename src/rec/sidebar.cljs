@@ -9,25 +9,25 @@
 
 ;; helpers ----------------------------------------------
 
-(defn comp-selector [{:keys [icon-class comps on-change]}]
+(defn comp-selector [{:keys [icon-class comps on-change placeholder]
+                      :or {placeholder "Select a component"}}]
   (let [state (atom {:comps comps
                      :selected #{}})
         selected? #((:selected @state) (key %))]
     (fn []
       [:div.comp-selector
+
        [:div.input-group
+        {:z-index :auto}
         [:div.input-group-addon
          [:i.fa {:class icon-class}]]
         [:div.dropdown.form-control
-         {:style {:cursor :pointer}}
-         [:div
-          {:data-target "#"
-           :data-toggle "dropdown"
-           :aria-haspopup "true"
-           :aria-expanded "false"}
-          "New Author filter..."]
+         {:style {:cursor :pointer
+                  :z-index :auto}}
+         [:div {:data-toggle "dropdown"}
+          placeholder]
          [:ul.dropdown-menu
-          {:aria-labelledby "tokens-dd"}
+          {:style {:z-index 10}}
           (doall
             (for [[name* _] (filter (comp not selected?) (:comps @state))]
               ^{:key (gensym)}
@@ -39,18 +39,14 @@
        [:div.selected-comps
         {:style {:padding :20px}}
         (doall
-          (for [[_ comp] (filter selected? (:comps @state))]
-            ^{:key (gensym)}
-            comp))]])))
+          (for [[name comp] (filter selected? (:comps @state))]
+            (assoc-in comp [1 :on-delete] #(swap! state update :selected disj name))))]])))
 
 (defn label [s]
   [:div
    {:style {:font-size :20px
             :padding-bottom :10px}}
    s])
-
-(defn categorical-dropdown []
-  )
 
 ;; sub components ------------------------------------------
 
@@ -68,7 +64,7 @@
        [:div.timerange-main-bar.input-group
         {:style {:width :100%}
          :on-click #(swap! state update :open not)}
-        [:div.input-group-addon [:a.fa.fa-calendar]]
+        [:div.input-group-addon [:i.fa.fa-calendar]]
         [:div.form-control (str (unparse* (:from @state)) " -> " (unparse* (:to @state)))]]
        (when (:open @state)
          [daterange
@@ -88,10 +84,11 @@
    [label "Authors"]
    [comp-selector
     {:icon-class :fa-user
+     :placeholder "New Author filter..."
      :comps
-     {:Age [multi-rangeslider {:placeholder "Age" :min 0 :max 100 :on-change #(println %)}]
-      :Klout [multi-rangeslider {:placeholder "Klout" :min 0 :max 100 :on-change #(println %)}]
-      :Gender [multitoggle {:title "Gender" :xs ["male" "female"] :max-selected 1 :on-change #(println %)}]}}]])
+     {:Age ^{:key (gensym)} [multi-rangeslider {:icon-class "fa fa-birthday-cake" :placeholder "New age filter" :min 0 :max 100 :on-change #(println %)}]
+      :Klout ^{:key (gensym)} [multi-rangeslider {:icon-class "fa fa-thumbs-o-up" :placeholder "New klout filter" :min 0 :max 100 :on-change #(println %)}]
+      :Gender ^{:key (gensym)} [multitoggle {:icon-class "fa fa-venus-mars" :title "Gender" :xs ["male" "female"] :max-selected 1 :on-change #(println %)}]}}]])
 
 (defn tags* []
   [:div.tags-container
@@ -99,25 +96,39 @@
    [tags {:style {:margin-bottom "20px"}
           :on-change #(println %)
           :data {:queries ["q1" "q2" "q3"]
-                :tags ["t1" "t2" "t3"]
-                :tag-groups ["tg1" "tg2" "tg3"]}}]])
+                 :tags ["t1" "t2" "t3"]
+                 :tag-groups ["tg1" "tg2" "tg3"]}}]])
 
 (defn text-content []
   [:div.authors-container
    [label "Text Content"]
    [comp-selector
     {:icon-class :fa-font
+     :placeholder "New content filter..."
      :comps
-     {:Mood [multitoggle {:title "Mood" :xs ["positive" "negative" "factual"] :max-selected 2 :on-change #(println %)}]
-      :Language [bs-multiselect {:placeholder "Add a language filter" :data ["French" "English" "German"] :on-change #(println %)}]
-      :Gender [multitoggle {:title "Gender" :xs ["male" "female"] :max-selected 1 :on-change #(println %)}]}}]])
+     {:Mood
+      ^{:key (gensym)} [multitoggle {:title "Mood"
+                                     :xs ["positive" "negative" "factual"]
+                                     :max-selected 2
+                                     :icon-class "fa fa-smile-o"
+                                     :on-change #(println %)}]
+      :Language
+      ^{:key (gensym)} [bs-multiselect {:icon-class "fa fa-globe"
+                                        :placeholder "Add a language filter"
+                                        :data ["French" "English" "German"]
+                                        :on-change #(println %)}]
+      :Brands
+      ^{:key (gensym)} [bs-multiselect {:icon-class "fa fa-copyright"
+                                        :placeholder "Add a brand filter"
+                                        :data ["Pepsi" "Chanel" "Fleuri michon" "Durex"]
+                                        :on-change #(println %)}]}}]])
 
 
 (defn sidebar []
   [:div.sidebar
    {:style {:width :553px
             :padding :10px}}
-   [period {}]
+   [period {:on-change #(println %)}]
    [keywords]
    [:div.tags]
    [tags*]

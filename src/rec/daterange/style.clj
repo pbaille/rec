@@ -6,7 +6,7 @@
     {:display :flex
      :flex-flow "row nowrap"
      :justify-content :flex-start
-     :padding :20px}
+     :padding :10px}
     [:.datefrom :.dateto
      {:display :inline-block
       :width :210px}
@@ -17,7 +17,7 @@
                 :width :100px
                 :flex-flow "column nowrap"
                 :justify-content "center"
-                :margin-right :10px }
+                :margin-right :5px }
      [:.preset {:text-align :center
                 :background :#F7F7F7
                 :border-radius :2px

@@ -11,7 +11,7 @@
   (on-change (:selected @state)))
 
 (defn multitoggle
-  [{:keys [title on-change xs max-selected]
+  [{:keys [title on-change xs max-selected on-delete icon-class]
     :as opts
     :or {on-change identity title "multitoggle"}}]
 
@@ -19,14 +19,15 @@
                      :selected ()})]
     (fn []
       [:div.multitoggle.btn-group
-       [:span.multitoggle-item.delete-button.btn.btn-default [:i.fa.fa-times]]
-       [:div.multitoggle-item.btn.btn-default.title title]
+       {:style {:margin-bottom :20px}}
+       [:div.btn.btn-default.icon [:i {:class icon-class}]]
        (doall
          (for [x (:xs @state)]
            ^{:key (gensym)}
            [:div.multitoggle-item.btn.btn-default
             {:class (when ((set (:selected @state)) x) "selected")
              :on-click #(select-item state x max-selected on-change)}
-            (name x)]))])))
+            (name x)]))
+       [:span.multitoggle-item.delete-button.btn.btn-default {:on-click on-delete} [:i.fa.fa-times]]])))
 
 
