@@ -1,8 +1,9 @@
 (ns rec.sidebar
   (:require [reagent.core :refer [atom] :as r]
             [rec.daterange.comp :refer [daterange unparse*]]
-            [rec.bs-multiselect.comp :refer [bs-multiselect]]
-            [rec.tokens.comp :refer [tokens tags]]
+            [rec.multiselect.comp :refer [multiselect]]
+            [rec.tokens.comp :refer [tokens]]
+            [rec.tags.comp :refer [tags]]
             [rec.multitoggle.comp :refer [multitoggle]]
             [rec.multirangeslider.comp :refer [multi-rangeslider]]
             [cljs-time.core :as t]))
@@ -113,12 +114,12 @@
                                      :icon-class "fa fa-smile-o"
                                      :on-change #(println %)}]
       :Language
-      ^{:key (gensym)} [bs-multiselect {:icon-class "fa fa-globe"
+      ^{:key (gensym)} [multiselect {:icon-class "fa fa-globe"
                                         :placeholder "Add a language filter"
                                         :data ["French" "English" "German"]
                                         :on-change #(println %)}]
       :Brands
-      ^{:key (gensym)} [bs-multiselect {:icon-class "fa fa-copyright"
+      ^{:key (gensym)} [multiselect {:icon-class "fa fa-copyright"
                                         :placeholder "Add a brand filter"
                                         :data ["Pepsi" "Chanel" "Fleuri michon" "Durex"]
                                         :on-change #(println %)}]}}]])

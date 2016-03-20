@@ -13,22 +13,22 @@
               (:data @state))))
 
 (defn multiselect
-  [{:keys [data selected placeholder on-change icon-class]
+  [{:keys [data selected placeholder on-change icon-class on-delete]
     :or {selected []
          data []
          placeholder "Type something"
-         on-change identity
-         icon-class :zmdi-github-alt}}]
+         on-change identity}}]
   (let [formatted (map #(assoc % :selected false) (format-data data))
         state (atom {:data formatted
                      :focus false})
         selected (reaction (filter :selected (:data @state)))]
     (fn []
       [:div.multiselect-container
-       {:class (when (:focus @state) "active")}
-       ;; :o
-       [:div.select-bar
-        [:i {:class (str "zmdi " (name icon-class))}]
+       {:class (when (:focus @state) "active")
+        :style {:margin-bottom :20px}}
+       [:div.input-group
+        {:style {:z-index :auto}}
+        [:div.input-group-addon [:i {:class icon-class}]]
         [(dropdown
            {:data (filter (comp not :selected) (:data @state))
             :placeholder placeholder
@@ -38,7 +38,8 @@
             :focus (:focus @state)
             :on-select (fn [_ item]
                          (set-selection! state item true)
-                         (on-change @selected))})]]
+                         (on-change @selected))})]
+        [:div.input-group-addon.delete-button {:on-click on-delete} [:i.fa.fa-times]]]
        [:div.selected-container
         (for [item @selected]
           ^{:key (gensym)}
@@ -49,3 +50,5 @@
            [:i.zmdi.zmdi-delete]
            (when-let [cat (:category item)] [:span.cat (name cat)])
            [:span.name (:name item)]])]])))
+
+

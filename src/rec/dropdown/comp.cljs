@@ -1,7 +1,6 @@
 (ns rec.dropdown.comp
   (:require-macros [reagent.ratom :refer [reaction]])
-  (:require [reagent.core :as r :refer [atom]]
-            [re-com.core :as rc]))
+  (:require [reagent.core :as r :refer [atom]]))
 
 (enable-console-print!)
 
@@ -69,9 +68,12 @@
     (case (.-which e)
       40 (swap! state assoc :highlighted (:id (nxt-item highlighted propositions)))
       38 (swap! state assoc :highlighted (:id (prev-item highlighted propositions)))
-      13 (let [selected (find-by-id @propositions (:highlighted @state))]
+      27 (do (.blur (.-target e)) (swap! state assoc :value ""))
+      13 (when-let [selected (find-by-id @propositions (:highlighted @state))]
+           (on-select! selected)
            (.blur (.-target e))
-           (on-select! selected))
+           (swap! state assoc :value ""))
+
       nil)))
 
 ;; stolen from re-com
@@ -111,31 +113,41 @@
                            :value %
                            :highlighted (:id (first (do-propositions (assoc @state :value %)))))
         set-focus! #(do (swap! state assoc :focus %) ((if % on-focus on-blur) state))
-        on-select! (juxt (partial on-select state) (comp set-value! :name))
-        has-categories? (:category (first formated))]
+        on-select! (juxt (partial on-select state) (comp set-value! :name))]
     (r/create-class
       {:reagent-render
        (fn []
          (let [highlighted (:highlighted @state)]
-           [:div.dropdown-container
-            {:class uniq-class}
-            [:input {:on-key-down (partial key-handler state propositions on-select!)
-                     :type "text"
-                     :placeholder placeholder
-                     :on-change #(set-value! (.. % -target -value))
-                     :on-focus #(set-focus! true)
-                     :on-blur #(set-focus! false)
-                     :value (:value @state)
-                     :auto-focus (:focus @state)}]
+           [:div.dropdown-container.form-control
+            {:class uniq-class
+             :style {:padding 0
+                     :z-index :auto}}
+            [:input
+             {:style {:width :100%
+                      :border 0
+                      :outline :none
+                      :padding 0
+                      :padding-left :8px
+                      :height :100%
+                      :background :transparent}
+              :on-key-down (partial key-handler state propositions on-select!)
+              :type "text"
+              :placeholder placeholder
+              :on-change #(set-value! (.. % -target -value))
+              :on-focus #(set-focus! true)
+              :on-blur #(set-focus! false)
+              :value (:value @state)
+              :auto-focus (:focus @state)}]
             (when (:focus @state)
               [:div.propositions
-               {:style {:max-height (:max-height options :100px)
-                        :overflow-y :auto}}
+               {:style {:max-height :120px
+                        :overflow-y :auto
+                        :z-index 10}}
                (doall
                  (for [[cat items] (group-by :category @propositions)]
                    ^{:key (gensym)}
                    [:div.category
-                    (if cat [:div.cat-title (name cat)]
+                    (if cat [:div.cat-title (clojure.string/capitalize (name cat))]
                             {:class "unique"})
                     (doall
                       (for [{:keys [name id] :as item} (sort-by :idx items)]
