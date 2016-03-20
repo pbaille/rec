@@ -1,4 +1,5 @@
-(ns rec.comp-selector.comp)
+(ns rec.comp-selector.comp
+  (:require [reagent.core :refer [atom] :as r]))
 
 (defn comp-selector [{:keys [icon-class comps on-change placeholder]
                       :or {placeholder "Select a component"}}]

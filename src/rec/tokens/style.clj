@@ -15,11 +15,15 @@
     [:.value
      [:.value-type {:border-left 0
                     :padding-left 0}]
+     [:.value-txt {:border-right 0
+                    :padding-right :1px}]
      [:.value-type :.value-txt
+      {:background-color :transparent}
       [:&:hover {:background-color :transparent
                  :border-color :#ccc}]]
      [:.delete-button
-      {:border-right 0}
+      {:border-right 0
+       :background-color :transparent}
       [:&:hover
        {:color :tomato
         :background-color :transparent
@@ -28,5 +32,6 @@
       {:border-left 0}
       [:&:hover
        {:color :tomato
+        :border-left 0
         :background-color :transparent
         :border-color :#ccc}]]]]])

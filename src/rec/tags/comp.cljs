@@ -69,8 +69,8 @@
           [:div
            {:style {:margin-top :20px}}
            [:div.value.btn-group
-            [:div.btn.btn-default
+            [:div.btn.btn-default.delete-button
              {:on-click #(swap! state update :values disj v)}
-             [:i.delete-button.fa.fa-times]]
+             [:i.fa.fa-times]]
             [:span.btn.btn-default.value-type (singularize-type type)]
             [:span.btn.btn-default.value-txt value]]])]])))

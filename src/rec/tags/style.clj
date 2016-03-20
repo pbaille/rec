@@ -15,7 +15,16 @@
             :text-align :center
             :line-height :30px}]]]]
    [:.values
+    [:.value-type {:border-left 0
+                   :padding-left 0}]
+    [:.value-type :.value-txt
+     [:&:hover {:background-color :transparent
+                :border-color :#ccc}]]
     [:.delete-button
-     {                                                      ;:height "34px"
-      :text-align :center
-      :vertical-align :middle}]]])
+     {:text-align :center
+      :vertical-align :middle
+      :border-right 0}
+     [:&:hover
+      {:color :tomato
+       :background-color :transparent
+       :border-color :#ccc}]]]])

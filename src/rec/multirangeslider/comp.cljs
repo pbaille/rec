@@ -9,12 +9,11 @@
       {:reagent-render
        (fn []
          (let [edit? (:edit @state)]
-           [:div.bs-rangeslider-container
+           [:div.rangeslider-container
             [:div.btn-group
-             [:div.btn.btn-default
+             [:div.btn.btn-default.delete-btn
               {:on-click #(on-delete (:value @state))}
-              [:span.fa.fa-times]
-              [:span.range-head "Range:"]]
+              [:span.fa.fa-times]]
              [:div.btn.btn-default.center-zone
               [:span.bound.from-value
                {:style (if edit? {:padding-right :15px}
@@ -33,10 +32,11 @@
                                  {:padding :6px})}
                (if edit? max (get-in @state [:value :to]))]]
 
-             [:div.btn.btn-default {:on-click (if edit?
-                                                #(do (swap! state assoc :edit false)
-                                                     (on-validate (:value @state)))
-                                                #(swap! state assoc :edit true))}
+             [:div.btn.btn-default.action-btn
+              {:on-click (if edit?
+                           #(do (swap! state assoc :edit false)
+                                (on-validate (:value @state)))
+                           #(swap! state assoc :edit true))}
               (if edit? [:span.fa.fa-check]
                         [:span.fa.fa-pencil])]]]))
        :component-did-mount
@@ -54,12 +54,12 @@
   (let [state (atom {:sliders {}})
         sliders (reaction (seq (:sliders @state)))]
     (fn []
-      [:div.multi-bsrs-container
+      [:div.multirangeslider-container
        (when-not @sliders {:style {:margin-bottom :20px}})
        [:div.btn-group
         [:div.btn.btn-default.icon [:i {:class icon-class}]]
         (let [sym (gensym)]
-          [:div.btn.btn-default
+          [:div.btn.btn-default.add-button
            {:on-click
             (fn [_]
               (swap! state

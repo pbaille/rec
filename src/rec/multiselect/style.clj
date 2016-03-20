@@ -14,19 +14,14 @@
    [:.selected-container
     {:position :relative}
     [:.selected-item
-     {:background :lightgrey
-      :border-radius :5px
-      :display :inline-block
-      :padding "6px 14px"
-      :font-size :16px
-      :margin "8px 8px 0 0"}
-     [:span.cat {:margin-right :4px :color :white}]
-
-     [:&:hover
-      {:background :tomato
-       :padding "6px 8px"}
-      [:i {:display :inline}]]
-     [:i {:display :none
-          :font-size :14px
-          :vertical-align :middle
-          :margin-right "4px"}]]]])
+     {:padding "10px 10px 0 0"}
+     [:.delete-btn {:border-right 0}
+      [:&:hover
+       {:color :tomato
+        :background-color :transparent
+        :border-color :#ccc}]]
+     [:.name {:border-left 0
+              :padding-left 0}
+      [:&:hover
+       {:background-color :transparent
+        :border-color :#ccc}]]]]])

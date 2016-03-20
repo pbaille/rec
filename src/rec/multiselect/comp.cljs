@@ -43,12 +43,12 @@
        [:div.selected-container
         (for [item @selected]
           ^{:key (gensym)}
-          [:div.selected-item
+          [:div.selected-item.btn-group
            {:on-mouse-down (fn []
                              (set-selection! state item false)
                              (on-change @selected))}
-           [:i.zmdi.zmdi-delete]
+           [:div.btn.btn-default.delete-btn [:i.fa.fa-times]]
            (when-let [cat (:category item)] [:span.cat (name cat)])
-           [:span.name (:name item)]])]])))
+           [:div.btn.btn-default.name (:name item)]])]])))
 
 
