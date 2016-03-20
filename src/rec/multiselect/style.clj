@@ -2,6 +2,7 @@
 
 (def styles
   [:.multiselect-container
+   {:width :280px}
    [:&.active [:.zmdi {:color :tomato}]]
    [:.delete-button {:background-color :transparent
                      :padding "6px 8px"
